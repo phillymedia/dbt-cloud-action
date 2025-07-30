@@ -95,7 +95,7 @@ async function runJob() {
   return res.data;
 }
 
-const filterRuns = (jobRuns) => {
+const filterTriggeredRuns = (jobRuns) => {
   const foundRun = jobRuns.find(run => {
     if (run.trigger.github_pull_request_id !== undefined) {
       return run.trigger.github_pull_request_id === GITHUB_PR_NUMBER
@@ -105,7 +105,7 @@ const filterRuns = (jobRuns) => {
   return foundRun;
 }
 
-const getJobRuns = async (offset) => {
+const getTriggeredJobRuns = async (offset) => {
   const url =
     `accounts/${account_id}/runs` +
     `?job_definition_id=${job_id}` +
@@ -114,24 +114,25 @@ const getJobRuns = async (offset) => {
     `&offset=${offset}` +
     `&limit=${request_limit}`;
 
+  core.info(`job id: ${url}`)
   const response = await dbt_cloud_api.get(url);
   return response.data;
 }
 
-const getRunId = async () => {
+const getTriggeredRunId = async () => {
   let hasMoreRecords = true;
   let offset = 0;
   let runObj = undefined;
 
   while (hasMoreRecords) {
-    const jobRuns = await getJobRuns(offset);
+    const jobRuns = await getTriggeredJobRuns(offset);
 
     offset += jobRuns.extra.pagination.count;
     if (offset === jobRuns.extra.pagination.total_count) {
       hasMoreRecords = false
     };
 
-    runObj = filterRuns(jobRuns.data);
+    runObj = filterTriggeredRuns(jobRuns.data);
     core.info(`job id: ${runObj.id}`)
     if (runObj !== undefined) return runObj.id;
   }
@@ -177,7 +178,7 @@ async function executeAction() {
   //const jobRun = await runJob();
   //const runId = jobRun.data.id;
   //core.info(`Triggered job. ${jobRun.data.href}`);
-  const runId = await getRunId();
+  const runId = await getTriggeredRunId();
 
   let res;
   while (true) {
