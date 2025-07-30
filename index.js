@@ -134,6 +134,7 @@ const getTriggeredRunId = async () => {
     };
 
     runObj = filterTriggeredRuns(jobRuns.data);
+    core.info(`Triggered job. ${runObj.href}`);
     if (runObj !== undefined) return runObj.id;
   }
   core.setFailed(`Unable to find a dbt Cloud run associated with Pull Request #${github_pr_number}`);
@@ -182,8 +183,6 @@ async function executeAction() {
 
   }
   const runId = await getTriggeredRunId();
-
-  core.info(`DBT Cloud CI Job Run: https://cloud.getdbt.com/deploy/38962/projects/222243/runs/${runId}`);
 
   let res;
   while (true) {
