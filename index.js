@@ -185,7 +185,7 @@ async function executeAction() {
     const runId = await getTriggeredRunId();
   }
 
-  core.info(`DBT Cloud CI Job Run: https://cloud.getdbt.com/deploy/38962/projects/222243/runs/${runId}`)
+  core.info(`DBT Cloud CI Job Run: https://cloud.getdbt.com/deploy/38962/projects/222243/runs/${runId}`);
 
   let res;
   while (true) {
