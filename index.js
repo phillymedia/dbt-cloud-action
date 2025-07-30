@@ -107,7 +107,7 @@ const filterTriggeredRuns = (jobRuns) => {
 
 const getTriggeredJobRuns = async (offset) => {
   const url =
-    `accounts/${account_id}/runs` +
+    `accounts/${account_id}/runs/` +
     `?job_definition_id=${job_id}` +
     '&include_related=["trigger"]' +
     '&order_by=-started_at' +
@@ -139,6 +139,7 @@ const getTriggeredRunId = async () => {
   }
   core.setFailed(`Unable to find a dbt Cloud run associated with Pull Request #${GITHUB_PR_NUMBER}`);
 }
+
 
 async function getJobRun(run_id) {
   try {
