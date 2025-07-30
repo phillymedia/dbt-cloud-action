@@ -90,6 +90,48 @@ async function runJob(account_id, job_id) {
   return res.data;
 }
 
+const filterRuns = (jobRuns) => {
+  const foundRun = jobRuns.find(run => {
+    if (run.trigger.github_pull_request_id !== undefined) {
+      return run.trigger.github_pull_request_id === GITHUB_PR_NUMBER
+    }
+  });
+
+  return foundRun;
+}
+
+const getJobRuns = async (offset) => {
+  const url =
+    `accounts/${DBT_CLOUD_ACCOUNT_ID}/runs` +
+    `?job_definition_id=${DBT_CLOUD_JOB_ID}` +
+    '&include_related=["trigger"]' +
+    '&order_by=-started_at' +
+    `&offset=${offset}` +
+    `&limit=${DBT_CLOUD_API_REQUEST_LIMIT}`;
+
+  const response = await dbt_cloud_api.get(url);
+  return response.data;
+}
+
+const getRunId = async () => {
+  let hasMoreRecords = true;
+  let offset = 0;
+  let runObj = undefined;
+
+  while (hasMoreRecords) {
+    const jobRuns = await getJobRuns(offset);
+
+    offset += jobRuns.extra.pagination.count;
+    if (offset === jobRuns.extra.pagination.total_count) {
+      hasMoreRecords = false
+    };
+
+    runObj = filterRuns(jobRuns.data);
+    if (runObj !== undefined) return runObj.id;
+  }
+  core.setFailed(`Unable to find a dbt Cloud run associated with Pull Request #${GITHUB_PR_NUMBER}`);
+}
+
 async function getJobRun(account_id, run_id) {
   try {
     let res = await dbt_cloud_api.get(`/accounts/${account_id}/runs/${run_id}/?include_related=["run_steps"]`);
@@ -129,10 +171,10 @@ async function executeAction() {
   const job_id = core.getInput('dbt_cloud_job_id');
   const failure_on_error = core.getBooleanInput('failure_on_error');
 
-  const jobRun = await runJob(account_id, job_id);
-  const runId = jobRun.data.id;
-
-  core.info(`Triggered job. ${jobRun.data.href}`);
+  //const jobRun = await runJob(account_id, job_id);
+  //const runId = jobRun.data.id;
+  //core.info(`Triggered job. ${jobRun.data.href}`);
+  const runId = await getRunId();
 
   let res;
   while (true) {
