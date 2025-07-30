@@ -109,8 +109,8 @@ const getTriggeredJobRuns = async (offset) => {
   const url =
     `accounts/${account_id}/runs/` +
     `?job_definition_id=${job_id}` +
-    '&include_related=["trigger"]' +
-    '&order_by=-started_at' +
+    '&include_related=trigger' +
+    '&order_by=-created_at' +
     `&offset=${offset}` +
     `&limit=${request_limit}`;
 
