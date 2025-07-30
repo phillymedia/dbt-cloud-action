@@ -116,6 +116,7 @@ const getTriggeredJobRuns = async (offset) => {
 
   core.info(`job id: ${url}`)
   const response = await dbt_cloud_api.get(url);
+  core.info(`url data: ${response.data}`)
   return response.data;
 }
 
