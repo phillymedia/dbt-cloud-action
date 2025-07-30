@@ -3,6 +3,7 @@ const core = require('@actions/core');
 const fs = require('fs');
 const axiosRetry = require('axios-retry');
 const YAML = require('yaml')
+const github = require('@actions/github');
 
 axiosRetry(axios, {
   retryDelay: (retryCount) => retryCount * 1000,
@@ -35,6 +36,7 @@ const account_id = core.getInput('dbt_cloud_account_id');
 const job_id = core.getInput('dbt_cloud_job_id');
 const failure_on_error = core.getBooleanInput('failure_on_error');
 const request_limit = core.getInput('dbt_cloud_request_limit');
+const github_pr_number = github.context.issue.number;
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -98,7 +100,7 @@ async function runJob() {
 const filterTriggeredRuns = (jobRuns) => {
   const foundRun = jobRuns.find(run => {
     if (run.trigger.github_pull_request_id !== undefined) {
-      return run.trigger.github_pull_request_id === GITHUB_PR_NUMBER
+      return run.trigger.github_pull_request_id === github_pr_number
     }
   });
 
@@ -137,7 +139,7 @@ const getTriggeredRunId = async () => {
     core.info(`job id: ${runObj.id}`)
     if (runObj !== undefined) return runObj.id;
   }
-  core.setFailed(`Unable to find a dbt Cloud run associated with Pull Request #${GITHUB_PR_NUMBER}`);
+  core.setFailed(`Unable to find a dbt Cloud run associated with Pull Request #${github_pr_number}`);
 }
 
 
