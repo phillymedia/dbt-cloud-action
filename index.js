@@ -105,7 +105,7 @@ const filterRuns = (jobRuns) => {
   return foundRun;
 }
 
-const getJobRuns = async () => {
+const getJobRuns = async (offset) => {
   const url =
     `accounts/${account_id}/runs` +
     `?job_definition_id=${job_id}` +
