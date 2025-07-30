@@ -178,12 +178,10 @@ async function executeAction() {
 
   if (core.getBooleanInput('trigger_job')) {
     const jobRun = await runJob();
-    const runId = jobRun.data.id;
     core.info(`Triggered job. ${jobRun.data.href}`);
 
-  } else {
-    const runId = await getTriggeredRunId();
   }
+  const runId = await getTriggeredRunId();
 
   core.info(`DBT Cloud CI Job Run: https://cloud.getdbt.com/deploy/38962/projects/222243/runs/${runId}`);
 
