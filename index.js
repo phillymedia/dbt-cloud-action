@@ -31,6 +31,11 @@ const dbt_cloud_api = axios.create({
   }
 });
 
+const account_id = core.getInput('dbt_cloud_account_id');
+const job_id = core.getInput('dbt_cloud_job_id');
+const failure_on_error = core.getBooleanInput('failure_on_error');
+const request_limit = core.getInput('dbt_cloud_request_limit');
+
 function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -53,7 +58,7 @@ const BOOL_OPTIONAL_KEYS = ['generate_docs_override'];
 const INTEGER_OPTIONAL_KEYS = ['threads_override', 'timeout_seconds_override'];
 const YAML_PARSE_OPTIONAL_KEYS = ['steps_override'];
 
-async function runJob(account_id, job_id) {
+async function runJob() {
   const cause = core.getInput('cause');
 
   const body = { cause };
@@ -100,14 +105,14 @@ const filterRuns = (jobRuns) => {
   return foundRun;
 }
 
-const getJobRuns = async (offset) => {
+const getJobRuns = async () => {
   const url =
-    `accounts/${DBT_CLOUD_ACCOUNT_ID}/runs` +
-    `?job_definition_id=${DBT_CLOUD_JOB_ID}` +
+    `accounts/${account_id}/runs` +
+    `?job_definition_id=${job_id}` +
     '&include_related=["trigger"]' +
     '&order_by=-started_at' +
     `&offset=${offset}` +
-    `&limit=${DBT_CLOUD_API_REQUEST_LIMIT}`;
+    `&limit=${request_limit}`;
 
   const response = await dbt_cloud_api.get(url);
   return response.data;
@@ -132,7 +137,7 @@ const getRunId = async () => {
   core.setFailed(`Unable to find a dbt Cloud run associated with Pull Request #${GITHUB_PR_NUMBER}`);
 }
 
-async function getJobRun(account_id, run_id) {
+async function getJobRun(run_id) {
   try {
     let res = await dbt_cloud_api.get(`/accounts/${account_id}/runs/${run_id}/?include_related=["run_steps"]`);
     return res.data;
@@ -147,7 +152,7 @@ async function getJobRun(account_id, run_id) {
   }
 }
 
-async function getArtifacts(account_id, run_id) {
+async function getArtifacts(run_id) {
   const dir = './target';
 
   if (!fs.existsSync(dir)) {
@@ -167,11 +172,8 @@ async function getArtifacts(account_id, run_id) {
 
 
 async function executeAction() {
-  const account_id = core.getInput('dbt_cloud_account_id');
-  const job_id = core.getInput('dbt_cloud_job_id');
-  const failure_on_error = core.getBooleanInput('failure_on_error');
 
-  //const jobRun = await runJob(account_id, job_id);
+  //const jobRun = await runJob();
   //const runId = jobRun.data.id;
   //core.info(`Triggered job. ${jobRun.data.href}`);
   const runId = await getRunId();
@@ -179,7 +181,7 @@ async function executeAction() {
   let res;
   while (true) {
     await sleep(core.getInput('interval') * 1000);
-    res = await getJobRun(account_id, runId);
+    res = await getJobRun(runId);
 
     if (!res) {
       // Retry if there is no response
@@ -208,7 +210,7 @@ async function executeAction() {
     // Wait for the step information to load in run
     core.info("Loading logs...")
     await sleep(5000);
-    res = await getJobRun(account_id, runId);
+    res = await getJobRun(runId);
     // Print logs
     for (let step of res.data.run_steps) {
       core.info("# " + step.name)
@@ -218,7 +220,7 @@ async function executeAction() {
   }
 
   if (core.getBooleanInput('get_artifacts')) {
-    await getArtifacts(account_id, runId);
+    await getArtifacts(runId);
   }
 
   const outputs = {
