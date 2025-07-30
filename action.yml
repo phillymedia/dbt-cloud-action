@@ -24,6 +24,11 @@ inputs:
     description: Whether run results, needed by fal, are fetched from dbt cloud. If using this action in other contexts this can be set to `false`, useful for jobs which do not generate artifacts.
     required: false
     default: true
+  dbt_cloud_request_limit:
+    description: "Record limit to apply when listing runs."
+    required: false
+    default: "100"
+  
 
   cause:
     description: Job trigger cause
