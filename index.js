@@ -132,7 +132,7 @@ const getRunId = async () => {
     };
 
     runObj = filterRuns(jobRuns.data);
-    if (runObj !== undefined) return runObj.id;
+    if (runObj !== undefined) return runObj;
   }
   core.setFailed(`Unable to find a dbt Cloud run associated with Pull Request #${GITHUB_PR_NUMBER}`);
 }
