@@ -55,6 +55,7 @@ const INTEGER_OPTIONAL_KEYS = ['threads_override', 'timeout_seconds_override'];
 const YAML_PARSE_OPTIONAL_KEYS = ['steps_override'];
 
 async function runJob(account_id, job_id) {
+  core.info(`in job run`);
   const cause = core.getInput('cause');
 
   const body = { cause };
