@@ -38,8 +38,8 @@ function sleep(ms) {
 }
 
 const OPTIONAL_KEYS = [
-  'git_sha',
   'git_branch',
+  'git_sha',
   'schema_override',
   'dbt_version_override',
   'threads_override',
