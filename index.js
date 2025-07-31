@@ -85,7 +85,7 @@ async function runJob(account_id, job_id) {
     }
   }
 
-  core.debug(`Run job body:\n${JSON.stringify(body, null, 2)}`)
+  core.info(`Run job body:\n${JSON.stringify(body, null, 2)}`)
 
   let res = await dbt_cloud_api.post(`/accounts/${account_id}/jobs/${job_id}/run/`, body)
   return res.data;
