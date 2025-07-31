@@ -40,14 +40,14 @@ function sleep(ms) {
 const OPTIONAL_KEYS = [
   'git_branch',
   'git_sha',
+  'github_pull_request_id',
   'schema_override',
   'dbt_version_override',
   'threads_override',
   'target_name_override',
   'generate_docs_override',
   'timeout_seconds_override',
-  'steps_override',
-  'github_pull_request_id',
+  'steps_override'
 ];
 
 const BOOL_OPTIONAL_KEYS = ['generate_docs_override'];
