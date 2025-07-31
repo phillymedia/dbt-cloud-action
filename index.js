@@ -61,13 +61,14 @@ async function runJob(account_id, job_id) {
 
   for (const key of OPTIONAL_KEYS) {
     let input = core.getInput(key);
+    core.info(`key: ${key}: ${input}`)
 
     if (input != '' && BOOL_OPTIONAL_KEYS.includes(key)) {
       input = core.getBooleanInput(key);
     } else if (input != '' && INTEGER_OPTIONAL_KEYS.includes(key)) {
       input = parseInt(input);
     } else if (input != '' && YAML_PARSE_OPTIONAL_KEYS.includes(key)) {
-      core.info(input);
+      core.debug(input);
       try {
         input = YAML.parse(input);
         if (typeof input == 'string') {
@@ -78,6 +79,7 @@ async function runJob(account_id, job_id) {
         throw e;
       }
     }
+    core.info(`after input: ${input}`)
 
     // Type-checking equality becuase of boolean inputs
     if (input !== '') {
