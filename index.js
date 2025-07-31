@@ -61,7 +61,6 @@ async function runJob(account_id, job_id) {
 
   for (const key of OPTIONAL_KEYS) {
     let input = core.getInput(key);
-    core.info(`key: ${key}: ${input}`)
 
     if (input != '' && BOOL_OPTIONAL_KEYS.includes(key)) {
       input = core.getBooleanInput(key);
@@ -79,7 +78,6 @@ async function runJob(account_id, job_id) {
         throw e;
       }
     }
-    core.info(`after input: ${input}`)
 
     // Type-checking equality becuase of boolean inputs
     if (input !== '') {
@@ -87,7 +85,7 @@ async function runJob(account_id, job_id) {
     }
   }
 
-  core.info(`Run job body:\n${JSON.stringify(body, null, 2)}`)
+  core.debug(`Run job body:\n${JSON.stringify(body, null, 2)}`)
 
   let res = await dbt_cloud_api.post(`/accounts/${account_id}/jobs/${job_id}/run/`, body)
   return res.data;
