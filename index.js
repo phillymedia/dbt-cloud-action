@@ -38,8 +38,8 @@ function sleep(ms) {
 }
 
 const OPTIONAL_KEYS = [
-  'git_sha',
   'git_branch',
+  'git_sha',
   'schema_override',
   'dbt_version_override',
   'threads_override',
@@ -67,7 +67,7 @@ async function runJob(account_id, job_id) {
     } else if (input != '' && INTEGER_OPTIONAL_KEYS.includes(key)) {
       input = parseInt(input);
     } else if (input != '' && YAML_PARSE_OPTIONAL_KEYS.includes(key)) {
-      core.debug(input);
+      core.info(input);
       try {
         input = YAML.parse(input);
         if (typeof input == 'string') {
