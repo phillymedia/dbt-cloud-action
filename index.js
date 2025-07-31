@@ -67,7 +67,7 @@ async function runJob(account_id, job_id) {
     } else if (input != '' && INTEGER_OPTIONAL_KEYS.includes(key)) {
       input = parseInt(input);
     } else if (input != '' && YAML_PARSE_OPTIONAL_KEYS.includes(key)) {
-      core.debug(input);
+      core.info(input);
       try {
         input = YAML.parse(input);
         if (typeof input == 'string') {
