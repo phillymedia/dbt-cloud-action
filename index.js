@@ -47,10 +47,11 @@ const OPTIONAL_KEYS = [
   'generate_docs_override',
   'timeout_seconds_override',
   'steps_override',
+  'github_pull_request_id',
 ];
 
 const BOOL_OPTIONAL_KEYS = ['generate_docs_override'];
-const INTEGER_OPTIONAL_KEYS = ['threads_override', 'timeout_seconds_override'];
+const INTEGER_OPTIONAL_KEYS = ['threads_override', 'timeout_seconds_override', 'github_pull_request_id'];
 const YAML_PARSE_OPTIONAL_KEYS = ['steps_override'];
 
 async function runJob(account_id, job_id) {
@@ -84,7 +85,7 @@ async function runJob(account_id, job_id) {
     }
   }
 
-  core.debug(`Run job body:\n${JSON.stringify(body, null, 2)}`)
+  core.info(`Run job body:\n${JSON.stringify(body, null, 2)}`)
 
   let res = await dbt_cloud_api.post(`/accounts/${account_id}/jobs/${job_id}/run/`, body)
   return res.data;
