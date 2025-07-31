@@ -47,6 +47,7 @@ const OPTIONAL_KEYS = [
   'generate_docs_override',
   'timeout_seconds_override',
   'steps_override',
+  'github_pull_request_id',
 ];
 
 const BOOL_OPTIONAL_KEYS = ['generate_docs_override'];

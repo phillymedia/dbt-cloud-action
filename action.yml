@@ -24,6 +24,9 @@ inputs:
     description: Whether run results, needed by fal, are fetched from dbt cloud. If using this action in other contexts this can be set to `false`, useful for jobs which do not generate artifacts.
     required: false
     default: true
+  github_pull_request_id:
+    description: The github pull request id that triggered this job
+    required: true
 
   cause:
     description: Job trigger cause
